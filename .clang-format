@@ -1,0 +1,6 @@
+---
+BasedOnStyle: Google
+IndentWidth: 4
+AllowShortFunctionsOnASingleLine: None
+BreakBeforeBinaryOperators: All
+BinPackArguments: false
