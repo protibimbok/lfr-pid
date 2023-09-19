@@ -5,20 +5,21 @@
 
 #define pushBtnPin 12
 
-#define motorLEna 3 // Right Motor L293 Pin motorLEna
-#define motorLForward 4 // Right Motor L293 Pin motorLIn1
-#define motorLBack 5 // Right Motor L293 Pin motorLIn1
+#define motorLEna 2
+#define motorLForward 3
+#define motorLBack 4
 
-#define motorREna 8 // Left Motor L298 Pin motorREna
-#define motorRForward 6 // Left Motor L293 Pin motorRIn1
-#define motorRBack 7 // Left Motor L293Pin motorRIn1
+#define motorREna 7
+#define motorRForward 5
+#define motorRBack 6
 
 #define BASE_SPEED_L 100
 #define BASE_SPEED_R 100
 #define MAX_SPEED 255
 
 
-#define CALLIBRATION_THRESHOLD 550
+#define CALLIBRATION_THRESHOLD 250
+#define CALLIBRATION_MIDPOINT 500
 
 /**
  * The rest of the code is written assuming that

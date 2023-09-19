@@ -17,6 +17,7 @@ int getLinePos();
 
 void test_sensors();
 void callibrateSensors();
+void determineMidPoints();
 
 extern int LAST_SENSOR;
 

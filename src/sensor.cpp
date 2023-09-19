@@ -50,6 +50,32 @@ void test_sensors() {
     delay(1000);
 }
 
+void determineMidPoints() {
+    int firstReadings[SIZE] = {};
+    wheel(130, -130);
+    while (!allGte(THRESHOLDS, 0, SIZE)){
+        for (int i = 0; i < SIZE; i++) {
+            if (THRESHOLDS[i] > 0) {
+                continue;
+            }
+            int val = analogRead(SENSORS[i]);
+            if (firstReadings[i] == 0) {
+                firstReadings[i] = val;
+            } else if(abs(firstReadings[i] - val) > CALLIBRATION_THRESHOLD){
+                THRESHOLDS[i] = (firstReadings[i] + val) /2;
+            } else {
+                firstReadings[i] = (firstReadings[i] + val) / 2;
+            }
+        }
+        delay(10);
+    }
+    stopMotors();
+
+    for (int i = 0; i < SIZE; i++) {
+        write_int(THRESHOLDS[i], i);
+    }
+}
+
 void callibrateSensors() {
     long maxSums[SIZE] = {};
     int maxCounts[SIZE] = {};
@@ -58,10 +84,10 @@ void callibrateSensors() {
     int minCounts[SIZE] = {};
 
     wheel(130, -130);
-    while (!allGte(minCounts, 200, SIZE) || !allGte(maxCounts, 200, SIZE)) {
+    while (!allGte(minCounts, 20, SIZE) || !allGte(maxCounts, 20, SIZE)) {
         for (int i = 0; i < SIZE; i++) {
             long val = (long)analogRead(SENSORS[i]);
-            if (val < CALLIBRATION_THRESHOLD) {
+            if (val < CALLIBRATION_MIDPOINT) {
                 minSums[i] += val;
                 minCounts[i]++;
             } else {
