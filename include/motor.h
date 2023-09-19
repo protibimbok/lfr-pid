@@ -15,5 +15,8 @@ void turnLeft90();
 void seiram_break();
 
 void motor_test();
+void motor_test_square();
+void motor_test_front_back();
+void motor_test_speed();
 
 #endif

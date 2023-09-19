@@ -17,9 +17,12 @@ void setup() {
 
 void loop() {
     if (runMode) {
-        followLine();
+        //followLine();
         //test_sensors();
-        //motor_test();
+        // motor_test();
+        //motor_test_square();
+        motor_test_front_back();
+        //motor_test_speed();
     } else {
         callibrateSensors();
         runMode = true;
