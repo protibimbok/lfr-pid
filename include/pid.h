@@ -7,5 +7,6 @@
 #include <sensor.h>
 
 void followLine();
+void strightLine();
 
 #endif

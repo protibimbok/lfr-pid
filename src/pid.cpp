@@ -1,4 +1,5 @@
 #include <pid.h>
+#include <sensor.h>
 
 typedef struct Sampling45 {
     bool active = false;
@@ -12,8 +13,8 @@ Sampling45 left45Sample;
 Sampling45 right45Sample;
 
 int lastError = 0;
-float kp = 0.4;
-float kd = 0.4;
+float kp = 2;
+float kd = 1;
 
 void findLine();
 
@@ -24,47 +25,83 @@ void checkLeft45Turn();
 
 void followLine() {
     readSensor();
-    printIntArray(READINGS, SIZE);
+    // printIntArray(READINGS, SIZE);
     printIntArray(READINGS_BIN, SIZE);
 
-    int pos = getLinePos();
-    
-    if (pos == ERR_OUT_OF_LINE) {
+    int dSpeedL = 0;
+    int dSpeedR = 0;
+    if (arrSum(READINGS_BIN, 0, 3) > 0) {
+        if (READINGS_BIN[0] == 1) {
+            dSpeedR = 35;
+        } else if (READINGS_BIN[1] == 1) {
+            dSpeedR = 20;
+        } else if (READINGS_BIN[2] == 1)
+            dSpeedR = 15;
+
+    } else if (arrSum(READINGS_BIN, 4, 6) > 0) {
+        if (READINGS_BIN[4] == 1)
+            dSpeedL = 35;
+        else if (READINGS_BIN[5] == 1)
+            dSpeedL = 20;
+        else if (READINGS_BIN[5] == 1)
+            dSpeedL = 15;
+    }
+    wheel(BASE_SPEED_L + dSpeedL, BASE_SPEED_R + dSpeedR);
+
+    delay(300);
+}
+
+void strightLine() {
+    readSensor();
+    int pos;
+    int  speed;
+
+    pos = getLinePos();
+
+
+    float error = pos - SETPOINT;
+
+    float P = kp * error;
+    float D = kd * (error - lastError);
+
+    lastError = error;
+
+    if(pos == ERR_OUT_OF_LINE)
+    {
+        wheel(-1*BASE_SPEED_L,-1*BASE_SPEED_R);
+        delay(50);
         findLine();
         pos = getLinePos();
+        error = pos - SETPOINT;
+        P = 0;
+        D = error > 0 ? -20 : 20;
     }
 
-    checkRightTurn();
-    checkLefttTurn();
+    speed = P + D;
 
-    // checkLeft45Turn();
+    Serial.print("speed: ");
+    Serial.println(speed);
 
-    int error = pos - SETPOINT;
-    float p = kp * (float) error;
-    float d = kd * (float) (error - lastError);
-    int dSpeed = (int) (p + d);
-    if (dSpeed > 50) {
-        dSpeed = 50;
-    }
-    Serial.print(BASE_SPEED_L + dSpeed);
-    Serial.print("   ");
-    Serial.println(BASE_SPEED_L - dSpeed);
-    Serial.println();
-    wheel(BASE_SPEED_L + dSpeed, BASE_SPEED_R - dSpeed);
-    lastError = error;
-    delay(500);
+    if (error > 0) {
+        wheel(BASE_SPEED_L + speed, BASE_SPEED_R);
+    } else if (error < 0) {
+        wheel(BASE_SPEED_L, BASE_SPEED_R - speed);
+    } else
+        wheel(BASE_SPEED_L, BASE_SPEED_R);
+    
+    delay(300);
 }
 
 void findLine() {
     if (LAST_SENSOR < SIZE / 2) {
-        wheel(-120, 0);
+        wheel(-1*BASE_SPEED_L, 1*BASE_SPEED_R);
     } else {
-        wheel(0, -120);
+        wheel(1*BASE_SPEED_L, -1*BASE_SPEED_R);
     }
-    do {
+    while (arrSum(READINGS_BIN,0,SIZE) == 0) {
         readSensor();
         delay(100);
-    } while (getLinePos() != ERR_OUT_OF_LINE);
+    }
 }
 
 void checkRightTurn() {
@@ -85,9 +122,7 @@ void checkLefttTurn() {
 }
 
 void checkLeft45Turn() {
-
     if (!left45Sample.active) {
-
         int leftSum = arrSum(READINGS_BIN, 0, 3);
         /**
          * Either all of the left sensors are on line,
@@ -124,10 +159,10 @@ void checkLeft45Turn() {
         }
     }
 
-    if (left45Sample.lastSensor == 2 && READINGS_BIN[2] == 0 && READINGS_BIN[3] == 1) {
-        
+    if (left45Sample.lastSensor == 2 && READINGS_BIN[2] == 0
+        && READINGS_BIN[3] == 1) {
         wheel(-150, 150);
-        while (arrSum(READINGS_BIN, 3, 6) != 4){
+        while (arrSum(READINGS_BIN, 3, 6) != 4) {
             delay(100);
             readSensor();
         }
@@ -138,11 +173,8 @@ void checkLeft45Turn() {
     }
 }
 
-
 void checkRight45Turn() {
-
     if (!right45Sample.active) {
-
         int rightSum = arrSum(READINGS_BIN, 3, 6);
         /**
          * Either all of the left sensors are on line,
@@ -179,10 +211,10 @@ void checkRight45Turn() {
         }
     }
 
-    if (right45Sample.lastSensor == 4 && READINGS_BIN[4] == 0 && READINGS_BIN[3] == 1) {
-        
+    if (right45Sample.lastSensor == 4 && READINGS_BIN[4] == 0
+        && READINGS_BIN[3] == 1) {
         wheel(150, -150);
-        while (arrSum(READINGS_BIN, 3, 6) != 4){
+        while (arrSum(READINGS_BIN, 3, 6) != 4) {
             delay(100);
             readSensor();
         }
