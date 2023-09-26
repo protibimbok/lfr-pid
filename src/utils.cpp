@@ -19,6 +19,15 @@ bool allGte(int* array, int val, int size) {
     return true;
 }
 
+bool allGt(int* array, int val, int size) {
+    for (int i = 0; i < size; i++) {
+        if (array[i] <= val) {
+            return false;
+        }
+    }
+    return true;
+}
+
 bool anyGte(int* array, int val, int size) {
     for (int i = 0; i < size; i++) {
         if (array[i] > val) {
