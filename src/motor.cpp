@@ -15,12 +15,44 @@ void setupMotor() {
     digitalWrite(motorLEna, HIGH);
 }
 
-int speedCorrection(int speed) {
-    int absSpeed = abs(speed);
-    if (absSpeed > MAX_SPEED) {
-        return MAX_SPEED * (speed / absSpeed);
+int speedCorrectionL(int speed) {
+    if (speed == 0) {
+        return 0;
     }
-    return speed; 
+    int absSpeed, sign;
+    if (speed < 0) {
+        absSpeed = -1 * speed;
+        sign = -1;
+    } else {
+        absSpeed = speed;
+        sign = 1;
+    }
+
+    if (absSpeed > MAX_SPEED_L) {
+        return MAX_SPEED_L * sign;
+    }
+    speed = MIN_SPEED_L + (absSpeed / 255) * (MAX_SPEED_L - MIN_SPEED_L);
+    return speed * sign;
+}
+
+int speedCorrectionR(int speed) {
+    if (speed == 0) {
+        return 0;
+    }
+    int absSpeed, sign;
+    if (speed < 0) {
+        absSpeed = -1 * speed;
+        sign = -1;
+    } else {
+        absSpeed = speed;
+        sign = 1;
+    }
+
+    if (absSpeed > MAX_SPEED_R) {
+        return MAX_SPEED_R * sign;
+    }
+    speed = MIN_SPEED_R + (absSpeed / 255) * (MAX_SPEED_R - MIN_SPEED_R);
+    return speed * sign;
 }
 
 void stopRightMotor() {
@@ -42,8 +74,8 @@ void stopMotors() {
 }
 
 void wheel(int left, int right) {
-    right = speedCorrection(right);
-    left = speedCorrection(left);
+    right = speedCorrectionR(right);
+    left = speedCorrectionL(left);
 
     if (left == 0) {
         stopLefttMotor();

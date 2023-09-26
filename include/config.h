@@ -15,7 +15,10 @@
 
 #define BASE_SPEED_L 100
 #define BASE_SPEED_R 100
-#define MAX_SPEED 255
+#define MAX_SPEED_L 255
+#define MAX_SPEED_R 255
+#define MIN_SPEED_L 50
+#define MIN_SPEED_R 50
 
 
 #define CALLIBRATION_THRESHOLD 250
