@@ -13,8 +13,8 @@ Sampling45 left45Sample;
 Sampling45 right45Sample;
 
 int lastError = 0;
-float kp = 2;
-float kd = 1;
+float kp = 1.1;
+float kd = 1.2;
 
 void findLine();
 
@@ -93,7 +93,7 @@ void strightLine() {
 }
 
 void findLine() {
-    if (LAST_SENSOR < SIZE / 2) {
+    if (LAST_SENSOR < SETPOINT) {
         wheel(-1*BASE_SPEED_L, 1*BASE_SPEED_R);
     } else {
         wheel(1*BASE_SPEED_L, -1*BASE_SPEED_R);
