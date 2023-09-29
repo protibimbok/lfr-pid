@@ -52,17 +52,18 @@ void test_sensors() {
 
 void determineMidPoints() {
     int firstReadings[SIZE] = {};
+    int thresHolds[SIZE] = {};
     wheel(130, -130);
-    while (!allGte(THRESHOLDS, 0, SIZE)){
+    while (!allGt(thresHolds, 0, SIZE)){
         for (int i = 0; i < SIZE; i++) {
-            if (THRESHOLDS[i] > 0) {
+            if (thresHolds[i] > 0) {
                 continue;
             }
             int val = analogRead(SENSORS[i]);
             if (firstReadings[i] == 0) {
                 firstReadings[i] = val;
             } else if(abs(firstReadings[i] - val) > CALLIBRATION_THRESHOLD){
-                THRESHOLDS[i] = (firstReadings[i] + val) /2;
+                thresHolds[i] = (firstReadings[i] + val) /2;
             } else {
                 firstReadings[i] = (firstReadings[i] + val) / 2;
             }
@@ -72,7 +73,8 @@ void determineMidPoints() {
     stopMotors();
 
     for (int i = 0; i < SIZE; i++) {
-        write_int(THRESHOLDS[i], i);
+        THRESHOLDS[i] = thresHolds[i];
+        write_int(thresHolds[i], i);
     }
 }
 
